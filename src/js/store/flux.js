@@ -1,42 +1,24 @@
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
-			demo: [
-				{
-					title: "FIRST",
-					background: "white",
-					initial: "white"
-				},
-				{
-					title: "SECOND",
-					background: "white",
-					initial: "white"
-				}
-			]
+			chuckNorrisJokes: ["Manuelita"]
 		},
 		actions: {
-			// Use getActions to call a function within a fuction
-			exampleFunction: () => {
-				getActions().changeColor(0, "green");
-			},
-			loadSomeData: () => {
-				/**
-					fetch().then().then(data => setStore({ "foo": data.bar }))
-				*/
-			},
-			changeColor: (index, color) => {
-				//get the store
-				const store = getStore();
+			getChuckNorrisJoke: () => {
+				fetch("https://api.chucknorris.io/jokes/random")
+					.then(response => {
+						return response.json();
+					})
+					.then(json => {
+						console.log("JSON Response: ", json.value);
+						let jokes = getStore().chuckNorrisJokes;
+						jokes.push(json.value);
 
-				//we have to loop the entire demo array to look for the respective index
-				//and change its color
-				const demo = store.demo.map((elm, i) => {
-					if (i === index) elm.background = color;
-					return elm;
-				});
-
-				//reset the global store
-				setStore({ demo: demo });
+						setStore({ chuckNorrisJokes: jokes });
+					})
+					.catch(error => {
+						console.error("Error:", error);
+					});
 			}
 		}
 	};
